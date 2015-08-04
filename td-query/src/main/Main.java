@@ -13,7 +13,9 @@ public class Main {
             Query query = new Query();
             query.runQuery(testCLI);
         } catch (ClientException e) {
-            System.err.print("Application Failed:" + e.getLocalizedMessage());
+            System.err.print("Application Failed: " + e.getMessage());
+            System.exit(1);
+
         }
     }
 }

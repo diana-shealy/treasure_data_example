@@ -55,6 +55,7 @@ public class TreasureDataCLIParser {
             if (cmd.hasOption("c")) {
                 if (cmd.getOptionValue("c") != null) {
                     columns = cmd.getOptionValue("c");
+                    columns = columns.substring(1, columns.length()-1);
                 }
                 else {
                     throw new ParseException("Columns option selected but no columns defined. Refer to usage below.");
@@ -82,6 +83,9 @@ public class TreasureDataCLIParser {
             if (cmd.hasOption("e")) {
                 if (cmd.getOptionValue("e") != null) {
                     engine = cmd.getOptionValue("e");
+                    if (engine != "hive" && engine != "presto") {
+                        throw new ParseException("Only Hive and Presto engine options are supported");
+                    }
                 }
                 else {
                     throw new ParseException("Engine option selected but not defined. Refer to usage below.");
@@ -91,6 +95,9 @@ public class TreasureDataCLIParser {
             if (cmd.hasOption("f")) {
                 if (cmd.getOptionValue("f") != null) {
                     format = cmd.getOptionValue("f");
+                    if (format != "tabular" && format != "csv") {
+                        throw new ParseException("Only Tabular and CSV output options are supported");
+                    }
                 }
                 else {
                     throw new ParseException("Format option selected but not defined. Refer to usage below.");
@@ -111,7 +118,7 @@ public class TreasureDataCLIParser {
             help();
         }
         if (!min_time.equals("NULL") && !max_time.equals("NULL")) {
-            if (Long.getLong(min_time) > Long.getLong(max_time)) {
+            if (Long.parseLong(min_time) > Long.parseLong(max_time)) {
                 System.err.println("Min_time must be less than Max_time. See usage below.");
                 help();
             }
@@ -124,7 +131,7 @@ public class TreasureDataCLIParser {
         HelpFormatter formatHelp = new HelpFormatter();
 
         formatHelp.printHelp("Main", tdOptions);
-        System.exit(0);
+        System.exit(2);
     }
 
 }

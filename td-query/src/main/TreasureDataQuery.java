@@ -67,7 +67,7 @@ public class TreasureDataQuery {
 
         // If at least one date range given, build WHERE clause
         if (!query_info.getMinDate().equals("NULL") || !query_info.getMaxDate().equals("NULL")) {
-            query = query + " WHERE TD_TIME_RANGE(time, '" + query_info.getMinDate() + "', '" + query_info.getMaxDate() + "')";
+            query = query + " WHERE TD_TIME_RANGE(time, " + query_info.getMinDate() + ", " + query_info.getMaxDate() + ")";
         }
 
         // If a limit given, build LIMIT clause

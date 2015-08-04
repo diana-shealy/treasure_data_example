@@ -22,6 +22,7 @@ public class Query {
             props.load(Query.class.getClassLoader().getResourceAsStream("treasure-data.properties"));
         } catch (IOException e) {
             System.out.print("Log In Failed" + e.getLocalizedMessage());
+            System.exit(1);
         }
     }
 
@@ -63,7 +64,7 @@ public class Query {
                 Thread.sleep(2 * 1000);
             } catch (InterruptedException e) {
                 System.err.println("Application Timed Out. Please check your settings and try again.");
-                break;
+                System.exit(1);
             }
         }
 
@@ -87,12 +88,6 @@ public class Query {
             System.out.println();
         }
 
-        if (!td_query.getLimit().equals("NULL") && jobResult.getResultSize() > Long.parseLong(td_query.getLimit())) {
-            System.out.println(td_query.getLimit() + " Results Returned\n\n");
-        }
-        else {
-            System.out.println(jobResult.getResultSize() + " Results Returned\n\n");
-        }
     }
 
 }
