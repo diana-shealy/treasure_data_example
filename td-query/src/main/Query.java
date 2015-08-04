@@ -25,30 +25,20 @@ public class Query {
         }
     }
 
-    /*
-    public void doApp() throws ClientException {
+    public void runQuery(TreasureDataQuery td_query) throws ClientException {
         TreasureDataClient client = new TreasureDataClient();
 
-        List<DatabaseSummary> databases = client.listDatabases();
-        for (DatabaseSummary database : databases) {
-            String databaseName = database.getName();
-            List<TableSummary> tables = client.listTables(databaseName);
-            for (TableSummary table : tables) {
-                System.out.println(databaseName);
-                System.out.println(table.getName());
-                System.out.println(table.getCount());
-            }
+        Job job = new Job(new Database(td_query.getDBName()), td_query.buildTDQueryString(td_query));
+        if (td_query.getEngine().equals("hive")) {
+            job.setType(Job.Type.HIVE);
         }
-    }*/
-
-    public void doApp() throws ClientException {
-        TreasureDataClient client = new TreasureDataClient();
-
-        Job job = new Job(new Database("amazon_security_sample"), "SELECT target_name, COUNT(DISTINCT login) FROM amazon_access GROUP BY target_name");
-        //client.submitJob(job);
+        else {
+            job.setType(Job.Type.PRESTO);
+        }
         client.submitJob(job);
         String jobID = job.getJobID();
         System.out.println("Initializing...\n JobID: " + jobID);
+        System.out.println("Running query: " + td_query.buildTDQueryString(td_query) + "\n\n");
 
         while (true) {
             JobSummary.Status stat = client.showJobStatus(job);
@@ -72,19 +62,35 @@ public class Query {
             try {
                 Thread.sleep(2 * 1000);
             } catch (InterruptedException e) {
-                // do something
+                System.err.println("Application Timed Out. Please check your settings and try again.");
+                break;
             }
         }
 
         JobResult jobResult = client.getJobResult(job);
         Unpacker unpacker = jobResult.getResult(); // Unpacker class is MessagePack's deserializer
         UnpackerIterator iter = unpacker.iterator();
+        System.out.println(td_query.getColumn() + "\n-----------------");
+
         while (iter.hasNext()) {
             ArrayValue row = iter.next().asArrayValue();
             for (Value elm : row) {
-                System.out.print(elm + "\t");
+                if (td_query.getFormat().equals("csv")) {
+                    System.out.print(elm + ",");
+                }
+                else {
+                    System.out.print(elm + "\t");
+                }
             }
             System.out.println();
         }
+
+        if (jobResult.getResultSize() > Long.parseLong(td_query.getLimit())) {
+            System.out.println(td_query.getLimit() + " Results Returned\n\n");
+        }
+        else {
+            System.out.println(jobResult.getResultSize() + " Results Returned\n\n");
+        }
     }
+
 }
