@@ -83,7 +83,8 @@ public class TreasureDataCLIParser {
             if (cmd.hasOption("e")) {
                 if (cmd.getOptionValue("e") != null) {
                     engine = cmd.getOptionValue("e");
-                    if (engine != "hive" && engine != "presto") {
+                    if (!engine.equals("hive") && !engine.equals("presto")) {
+                        System.out.print("Gets in here");
                         throw new ParseException("Only Hive and Presto engine options are supported");
                     }
                 }
@@ -95,7 +96,7 @@ public class TreasureDataCLIParser {
             if (cmd.hasOption("f")) {
                 if (cmd.getOptionValue("f") != null) {
                     format = cmd.getOptionValue("f");
-                    if (format != "tabular" && format != "csv") {
+                    if (format.equals("tabular") && format.equals("csv")) {
                         throw new ParseException("Only Tabular and CSV output options are supported");
                     }
                 }
