@@ -2,66 +2,199 @@ The below are the ten Test Cases:
 
 1) Default with no options
 
-java Main -db amazon_security_sample -tb amazon_access
+./td-run.sh query -db amazon_security_sample -tb amazon_access
 
 Query: "SELECT * from amazon_access"
 
+Output (TRUNCATED due to size)
+"2005-10-30 22:29:35"	162	"add_access"	59184	1130740173	
+"2008-08-13 08:39:36"	10932	"add_access"	55578	1218629756	
+"2008-09-06 04:45:51"	11316	"add_access"	51113	1220701551	
+"2009-02-09 08:23:47"	4658	"add_access"	51351	1234070806	
+"2007-07-02 04:19:19"	7654	"add_access"	39956	1183373174	
+"2009-09-23 15:52:08"	3202	"add_access"	36873	1253480880	
+"2007-07-12 05:52:57"	11315	"add_access"	61146	1184244777	
+"2009-06-06 04:16:33"	9828	"add_access"	54823	1244286993	
+"2009-09-07 11:30:34"	6377	"add_access"	75544	1252348233	
+"2009-09-27 09:08:58"	8912	"add_access"	37756	1254067738	
+"2008-09-29 05:15:56"	3847	"add_access"	65481	1222690556	
+"2007-12-12 21:48:07"	10032	"add_access"	46186	1197524887	
+"2010-08-08 19:20:56"	9737	"add_access"	53065	1281320456	
+"2009-09-04 01:01:51"	2762	"add_access"	43553	1252051311	
+"2009-09-19 23:58:38"	8311	"add_access"	59632	1253429918	
+"2009-10-10 04:49:06"	11315	"add_access"	62638	1255175346	
+"2007-06-11 08:48:42"	9001	"add_access"	58014	1181340566	
+"2006-04-04 07:20:47"	11315	"add_access"	47326	1144160447
+
 2) Default with all valid options
 
-java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+./td-run.sh query -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
 
 Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, 1283212800, 1285891200) LIMIT 10" (Ran on Hive and output = csv)
 
+Output:
+target_name,login
+-----------------
+9676,69258,
+9676,46214,
+9676,46710,
+9676,41004,
+9676,51256,
+9676,70477,
+9306,47815,
+9306,72215,
+9306,72215,
+9306,47815,
+
+
 3) Bad Database
 
-java Main -db dne_database -tb bad_table
+./td-run.sh query -db dne_database -tb bad_table
 
 Failure
+
+Output:
+
+Running with -db dne_database -tb bad_table
+Aug 04, 2015 3:01:08 PM com.treasure_data.client.DefaultClientAdaptorImpl doSubmitJob
+SEVERE: Submit job failed, response message = Not Found, code = 404
+Aug 04, 2015 3:01:08 PM com.treasure_data.client.DefaultClientAdaptorImpl doSubmitJob
+SEVERE: {"error":"Resource not found","text":"Resource not found","severity":"error"}
+Aug 04, 2015 3:01:08 PM com.treasure_data.client.DefaultClientAdaptorImpl submitJob
+WARNING: It failed. but will be retried: Submit job failed, response message = Not Found, detail = {"error":"Resource not found","text":"Resource not found","severity":"error"}, code = 404
+Aug 04, 2015 3:01:09 PM com.treasure_data.client.DefaultClientAdaptorImpl doSubmitJob
+SEVERE: Submit job failed, response message = Not Found, code = 404
+Aug 04, 2015 3:01:09 PM com.treasure_data.client.DefaultClientAdaptorImpl doSubmitJob
+SEVERE: {"error":"Resource not found","text":"Resource not found","severity":"error"}
+Aug 04, 2015 3:01:09 PM com.treasure_data.client.DefaultClientAdaptorImpl submitJob
+WARNING: Retry count exceeded limit: Submit job failed, response message = Not Found, detail = {"error":"Resource not found","text":"Resource not found","severity":"error"}, code = 404
 
 4) Bad date options MIN > MAX
 
-java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -M 1283212800 -m 1285891200
+./td-run.sh query -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -M 1283212800 -m 1285891200
 
 Failure
+
+Output
+Running with -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c target_name,login -M 1283212800 -m 1285891200
+Min_time must be less than Max_time. See usage below.
+usage: Main
+ -c,--column <arg>        Comma separated list of columns to be selected -
+                          Optional
+ -db,--db_name <arg>      Database Name - REQUIRED
+ -e,--engine <arg>        Treasure Data Query Engine - Presto by default -
+                          Optional
+ -f,--format <arg>        Return File Format - tabular by default -
+                          Optional
+ -l,--limit <arg>         Query Results Limit - Optional
+ -m,--min <arg>           Minimum timestamp - NULL by default - Optional
+ -M,--MAX <arg>           Maximum timestamp - NULL by default - Optional
+ -tb,--table_name <arg>   Table Name - REQUIRED
 
 5) Bad options - missing -e
 
-java Main -db amazon_security_sample -tb amazon_access -e  -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+./td-run.sh query -db amazon_security_sample -tb amazon_access -e  -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
 
 Failure
+
+Running with -db amazon_security_sample -tb amazon_access -e -f csv -l 10 -c target_name,login -m 1283212800 -M 1285891200
+Missing argument for option: e
+usage: Main
+ -c,--column <arg>        Comma separated list of columns to be selected -
+                          Optional
+ -db,--db_name <arg>      Database Name - REQUIRED
+ -e,--engine <arg>        Treasure Data Query Engine - Presto by default -
+                          Optional
+ -f,--format <arg>        Return File Format - tabular by default -
+                          Optional
+ -l,--limit <arg>         Query Results Limit - Optional
+ -m,--min <arg>           Minimum timestamp - NULL by default - Optional
+ -M,--MAX <arg>           Maximum timestamp - NULL by default - Optional
+ -tb,--table_name <arg>   Table Name - REQUIRED
 
 6) Bad options - Format other than csv or tabular
 
-java Main -db amazon_security_sample -tb amazon_access -e hive -f json -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+./td-run.sh query -db amazon_security_sample -tb amazon_access -e hive -f json -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
 
 Failure
 
+Only Tabular and CSV output options are supported
+usage: Main
+ -c,--column <arg>        Comma separated list of columns to be selected -
+                          Optional
+ -db,--db_name <arg>      Database Name - REQUIRED
+ -e,--engine <arg>        Treasure Data Query Engine - Presto by default -
+                          Optional
+ -f,--format <arg>        Return File Format - tabular by default -
+                          Optional
+ -l,--limit <arg>         Query Results Limit - Optional
+ -m,--min <arg>           Minimum timestamp - NULL by default - Optional
+ -M,--MAX <arg>           Maximum timestamp - NULL by default - Optional
+ -tb,--table_name <arg>   Table Name - REQUIRED
+
 7) Query without all options
 
-java Main -db amazon_security_sample -tb amazon_access -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+./td-run.sh query -db amazon_security_sample -tb amazon_access -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
 
 Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, 1283212800, 1285891200) LI
 MIT 10" 
 
+target_name,login
+-----------------
+6142	62261	
+5981	63581	
+6142	40343	
+5981	42965	
+6142	61496	
+5983	63581	
+5983	42965	
+8311	74885	
+8311	36492	
+8311	62016
+
 8) Query that returns an empty set
-java Main -db amazon_security_sample -tb amazon_access -c 'target_name,login' -M 100
+
+./td-run.sh query -db amazon_security_sample -tb amazon_access -c 'target_name,login' -M 100
 
 Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, NULL, 100)" 
 
-9) Max Time, no Min Time
-java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -M 1285891200
+Output:
+Running query: SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, NULL, 100)
 
-Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, NULL, 1285891200) LI
-MIT 10" 
 
-10) Min Time, no Max Time
-java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+target_name,login
+-----------------
+
+9) Min Time, no Max Time
+
+./td-run.sh query -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -m 1283212800
 
 Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, 1283212800, NULL) LIMIT 10"
 
+Output:
 
-11) Limit of 0
+target_name,login
+-----------------
+9674,70552,
+9674,67385,
+9674,40304,
+9674,44553,
+9674,64384,
+9674,50941,
+9674,74796,
+9674,66737,
+9674,76804,
+9674,66520,
 
-java Main -db amazon_security_sample -tb amazon_access -l 0 -c 'target_name,login'
+10) Limit of 0
 
-Query: "SELECT target_name,login FROM amazon_access LIMIT 10"
+./td-run.sh query -db amazon_security_sample -tb amazon_access -l 0 -c 'target_name,login'
+
+Query: "SELECT target_name,login FROM amazon_access LIMIT 0"
+
+Output:
+Running query: SELECT target_name,login FROM amazon_access LIMIT 0
+
+
+target_name,login
+-----------------
