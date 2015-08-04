@@ -1,6 +1,8 @@
 package main;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.cli.ParseException;
+
 
 public class TreasureDataCLIParser {
     private String[] args = null;
@@ -108,6 +110,12 @@ public class TreasureDataCLIParser {
             System.err.println(e.getMessage());
             help();
         }
+        if (!min_time.equals("NULL") && !max_time.equals("NULL")) {
+            if (Long.getLong(min_time) > Long.getLong(max_time)) {
+                System.err.println("Min_time must be less than Max_time. See usage below.");
+                help();
+            }
+        }
 
         return new TreasureDataQuery(database, table, format, limit, columns, engine, min_time, max_time);
     }
@@ -118,4 +126,5 @@ public class TreasureDataCLIParser {
         formatHelp.printHelp("Main", tdOptions);
         System.exit(0);
     }
+
 }

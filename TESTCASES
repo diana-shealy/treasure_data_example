@@ -1,0 +1,67 @@
+The below are the ten Test Cases:
+
+1) Default with no options
+
+java Main -db amazon_security_sample -tb amazon_access
+
+Query: "SELECT * from amazon_access"
+
+2) Default with all valid options
+
+java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+
+Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, 1283212800, 1285891200) LIMIT 10" (Ran on Hive and output = csv)
+
+3) Bad Database
+
+java Main -db dne_database -tb bad_table
+
+Failure
+
+4) Bad date options MIN > MAX
+
+java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -M 1283212800 -m 1285891200
+
+Failure
+
+5) Bad options - missing -e
+
+java Main -db amazon_security_sample -tb amazon_access -e  -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+
+Failure
+
+6) Bad options - Format other than csv or tabular
+
+java Main -db amazon_security_sample -tb amazon_access -e hive -f json -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+
+Failure
+
+7) Query without all options
+
+java Main -db amazon_security_sample -tb amazon_access -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+
+Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, 1283212800, 1285891200) LI
+MIT 10" 
+
+8) Query that returns an empty set
+java Main -db amazon_security_sample -tb amazon_access -c 'target_name,login' -M 100
+
+Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, NULL, 100)" 
+
+9) Max Time, no Min Time
+java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -M 1285891200
+
+Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, NULL, 1285891200) LI
+MIT 10" 
+
+10) Min Time, no Max Time
+java Main -db amazon_security_sample -tb amazon_access -e hive -f csv -l 10 -c 'target_name,login' -m 1283212800 -M 1285891200
+
+Query: "SELECT target_name,login FROM amazon_access WHERE TD_TIME_RANGE(time, 1283212800, NULL) LIMIT 10"
+
+
+11) Limit of 0
+
+java Main -db amazon_security_sample -tb amazon_access -l 0 -c 'target_name,login'
+
+Query: "SELECT target_name,login FROM amazon_access LIMIT 10"
