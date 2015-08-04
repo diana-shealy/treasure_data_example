@@ -2,6 +2,8 @@
 
 Pull treasure_data_example directory from GitHub, all source code and jar dependencies needed are within the directory. If in doubt, you can download the Apache Commons CLI here: https://commons.apache.org/proper/commons-cli/download_cli.cgi
 
+Save your `treasure-data.properties` file under `td-query\resources`
+
 The script `td-run.sh` contains all commands you need to build, run and clean the program. 
 
 Building the Program 
