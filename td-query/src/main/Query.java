@@ -70,7 +70,9 @@ public class Query {
         JobResult jobResult = client.getJobResult(job);
         Unpacker unpacker = jobResult.getResult(); // Unpacker class is MessagePack's deserializer
         UnpackerIterator iter = unpacker.iterator();
-        System.out.println(td_query.getColumn() + "\n-----------------");
+        if (!td_query.getColumn().equals("*")) {
+            System.out.println(td_query.getColumn() + "\n-----------------");
+        }
 
         while (iter.hasNext()) {
             ArrayValue row = iter.next().asArrayValue();
@@ -85,7 +87,7 @@ public class Query {
             System.out.println();
         }
 
-        if (jobResult.getResultSize() > Long.parseLong(td_query.getLimit())) {
+        if (!td_query.getLimit().equals("NULL") && jobResult.getResultSize() > Long.parseLong(td_query.getLimit())) {
             System.out.println(td_query.getLimit() + " Results Returned\n\n");
         }
         else {
